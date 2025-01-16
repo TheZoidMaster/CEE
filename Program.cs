@@ -146,7 +146,6 @@ class Program
 
         while (InstructionsLeft)
         {
-            Console.WriteLine($"Processing instructions: {string.Join(", ", KeeInstructions)}");
             instructions[KeeInstructions[0]]();
             int InstructionLength = length[KeeInstructions[0]];
             for (int i = 0; i < InstructionLength; i++)
