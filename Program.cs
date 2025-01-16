@@ -6,16 +6,16 @@ class Program
 {
     static bool InstructionsLeft = true;
     static bool Decrypt = false;
-    static byte[]? FileContent;
+    static byte[] FileContent = Array.Empty<byte>();
     static List<int> KeeInstructions = new List<int>();
 
     public class Options
     {
         [Option('i', "input", Required = true, HelpText = "Input file to encrypt/decrypt.")]
-        public string? InputFile { get; set; }
+        public required string? InputFile { get; set; }
 
         [Option('k', "kee", Required = true, HelpText = "KEE file to use.")]
-        public string? KeeFile { get; set; }
+        public required string? KeeFile { get; set; }
 
         [Option('d', "decrypt", Default = false, HelpText = "Decrypt the input file.")]
         public bool Decrypt { get; set; }
@@ -30,28 +30,12 @@ class Program
 
     static void RunOptions(Options opts)
     {
+        if (!ValidateInputs(opts.InputFile, opts.KeeFile)) return;
+
         Decrypt = opts.Decrypt;
-
-        if (File.Exists(opts.InputFile))
-        {
-            FileContent = File.ReadAllBytes(opts.InputFile);
-        }
-        else
-        {
-            Console.WriteLine("Input file does not exist.");
-            return;
-        }
-
-        if (File.Exists(opts.KeeFile))
-        {
-            var keeContent = File.ReadAllBytes(opts.KeeFile);
-            KeeInstructions = keeContent.Select(b => (int)b).ToList();
-        }
-        else
-        {
-            Console.WriteLine("Key file does not exist.");
-            return;
-        }
+        FileContent = File.ReadAllBytes(opts.InputFile ?? throw new ArgumentNullException(nameof(opts.InputFile)));
+        var keeContent = File.ReadAllBytes(opts.KeeFile ?? throw new ArgumentNullException(nameof(opts.KeeFile)));
+        KeeInstructions = keeContent.Select(b => (int)b).ToList();
 
         if (FileContent is null)
         {
@@ -60,7 +44,6 @@ class Program
         }
 
         ProcessInstructions();
-
         File.WriteAllBytes(opts.InputFile, FileContent);
     }
 
@@ -69,36 +52,41 @@ class Program
         // me when i ignore errors :trol:
     }
 
+    static bool ValidateInputs(string? inputFile, string? keeFile)
+    {
+        if (!File.Exists(inputFile))
+        {
+            Console.WriteLine("Input file could not be found or does not exist.");
+            return false;
+        }
+
+        if (!File.Exists(keeFile))
+        {
+            Console.WriteLine("Key file could not be found does not exist.");
+            return false;
+        }
+
+        return true;
+    }
+
     static void ModifyFile(bool list, int[] value)
     {
         var newContent = new List<byte>();
+        int factor = Decrypt ? -1 : 1;
 
-        if (list && !Decrypt)
+        if (list)
         {
             for (int i = 0; i < FileContent.Length; i++)
             {
-                newContent.Add((byte)((FileContent[i] + value[i]) % 0x100));
+                newContent.Add((byte)((FileContent[i] + factor * value[i]) % 0x100));
             }
         }
-        else if (list && Decrypt)
+        else
         {
+            int singleValue = factor * value[0];
             for (int i = 0; i < FileContent.Length; i++)
             {
-                newContent.Add((byte)((FileContent[i] - value[i]) % 0x100));
-            }
-        }
-        else if (!list && !Decrypt)
-        {
-            for (int i = 0; i < FileContent.Length; i++)
-            {
-                newContent.Add((byte)((FileContent[i] + value[0]) % 0x100));
-            }
-        }
-        else if (!list && Decrypt)
-        {
-            for (int i = 0; i < FileContent.Length; i++)
-            {
-                newContent.Add((byte)((FileContent[i] - value[0]) % 0x100));
+                newContent.Add((byte)((FileContent[i] + singleValue) % 0x100));
             }
         }
 
@@ -119,7 +107,8 @@ class Program
 
     static void Gradient()
     {
-        // TODO: Implement gradient
+        Console.WriteLine("Gradient not yet implemented.\nAborting.");
+        Environment.Exit(1);
     }
 
 
@@ -131,31 +120,33 @@ class Program
     static void ProcessInstructions()
     {
         var length = new Dictionary<int, int>
-        {
-            { 0x23, 3 },
-            { 0x3f, 5 },
-            { 0xe4, 2 }
-        };
+    {
+        { 0x23, 3 },
+        { 0x3f, 5 },
+        { 0xe4, 2 }
+    };
 
         var instructions = new Dictionary<int, Action>
-        {
-            { 0x23, LinearGradient },
-            { 0x3f, Gradient },
-            { 0xe4, Add }
-        };
+    {
+        { 0x23, LinearGradient },
+        { 0x3f, Gradient },
+        { 0xe4, Add }
+    };
 
-        while (InstructionsLeft)
+        int index = 0;
+        while (index < KeeInstructions.Count)
         {
-            instructions[KeeInstructions[0]]();
-            int InstructionLength = length[KeeInstructions[0]];
-            for (int i = 0; i < InstructionLength; i++)
+            int instruction = KeeInstructions[index];
+            try
             {
-                KeeInstructions.RemoveAt(0);
+                instructions[instruction]();
             }
-            if (KeeInstructions.Count == 0)
+            catch (KeyNotFoundException)
             {
-                InstructionsLeft = false;
+                Console.WriteLine($"Unknown instruction 0x{instruction:X} at index {index}.\nAborting.");
+                Environment.Exit(1);
             }
+            index += length[instruction];
         }
     }
 }
