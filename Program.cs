@@ -35,7 +35,6 @@ class Program
         if (File.Exists(opts.InputFile))
         {
             FileContent = File.ReadAllBytes(opts.InputFile);
-            Console.WriteLine("File contents loaded successfully.");
         }
         else
         {
@@ -45,9 +44,8 @@ class Program
 
         if (File.Exists(opts.KeeFile))
         {
-            var keyContent = File.ReadAllBytes(opts.KeeFile);
-            KeeInstructions = keyContent.Select(b => (int)b).ToList();
-            Console.WriteLine("Key file loaded successfully.");
+            var keeContent = File.ReadAllBytes(opts.KeeFile);
+            KeeInstructions = keeContent.Select(b => (int)b).ToList();
         }
         else
         {
@@ -64,7 +62,6 @@ class Program
         ProcessInstructions();
 
         File.WriteAllBytes(opts.InputFile, FileContent);
-        Console.WriteLine("File processed successfully.");
     }
 
     static void HandleParseError(IEnumerable<Error> errors)
