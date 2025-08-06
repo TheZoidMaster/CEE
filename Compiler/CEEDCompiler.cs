@@ -22,6 +22,10 @@ class CEEDCompiler
 
         foreach (var line in lines)
         {
+            if ((line == "") | (line.StartsWith("#")))
+            {
+                continue;
+            }
             var parts = line.Split(' ');
             if (Mappings.TryGetValue(parts[0], out var opcode))
             {
