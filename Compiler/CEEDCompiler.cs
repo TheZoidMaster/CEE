@@ -9,7 +9,7 @@ class CEEDCompiler
         { "add", 0x00 },
         { "sub", 0x01 },
         { "grd", 0x02 },
-        { "lgr", 0x03 },
+        { "lgd", 0x03 },
         { "lsh", 0x04 },
         { "rsh", 0x05 },
         { "not", 0x06 }
@@ -18,7 +18,7 @@ class CEEDCompiler
     public static void Compile(string input, string? output)
     {
         var lines = File.ReadAllLines(input);
-        var instructions = new List<Instruction>();
+        var instructions = new List<InstructionToken>();
 
         foreach (var line in lines)
         {
@@ -34,7 +34,7 @@ class CEEDCompiler
                 {
                     operands.Add(Convert.ToByte(part, 16));
                 }
-                instructions.Add(new Instruction(opcode, operands.ToArray()));
+                instructions.Add(new InstructionToken(opcode, operands.ToArray()));
             }
             else
             {

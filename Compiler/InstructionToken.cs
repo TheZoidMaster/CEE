@@ -1,13 +1,13 @@
 namespace CEE.Compiler;
 
-class Instruction
+class InstructionToken
 {
-    public Instruction(byte opcode)
+    public InstructionToken(byte opcode)
     {
         Opcode = opcode;
     }
 
-    public Instruction(byte opcode, byte[] operands)
+    public InstructionToken(byte opcode, byte[] operands)
     {
         Opcode = opcode;
         Operands = operands;
