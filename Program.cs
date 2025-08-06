@@ -1,4 +1,5 @@
 ﻿namespace CEE;
+
 using System;
 using CEE.Compiler;
 using CommandLine;
@@ -49,7 +50,7 @@ class Program
 
     static void Main(string[] args)
     {
-        Parser.Default.ParseArguments<CompileOptions, FileEncryptionOptions>(args)
+        Parser.Default.ParseArguments<CompileOptions, FileEncryptionOptions, FolderEncryptionOptions>(args)
             .WithParsed<CompileOptions>(Compile)
             .WithParsed<FileEncryptionOptions>(FileEncryption)
             .WithParsed<FolderEncryptionOptions>(FolderEncryption);
