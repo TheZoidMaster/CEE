@@ -2,6 +2,7 @@
 
 using System;
 using CEE.Compiler;
+using CEE.Encryptor;
 using CommandLine;
 
 class Program
@@ -63,9 +64,7 @@ class Program
 
     static void FileEncryption(FileEncryptionOptions options)
     {
-        Console.WriteLine($"Input: {options.Input}");
-        Console.WriteLine($"Output: {options.Output ?? "<overwrite>"}");
-        Console.WriteLine($"Key: {options.Key}");
+        FileEncryptor.EncryptFile(options.Input, options.Output ?? options.Input, options.Key, options.Decrypt);
     }
 
     static void FolderEncryption(FolderEncryptionOptions options)
