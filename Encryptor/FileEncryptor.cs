@@ -6,7 +6,8 @@ using CEE.Encryptor.Instructions;
 class FileEncryptor
 {
     static readonly Dictionary<byte, InstructionBase> Mappings = new Dictionary<byte, InstructionBase> {
-         { 0x00, new Add() },
+        { 0x00, new Add() },
+        { 0x01, new Sub() }
     };
 
     public static void EncryptFile(string inputPath, string outputPath, string keyPath, bool decrypt)
