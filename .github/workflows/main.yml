@@ -32,7 +32,7 @@ jobs:
               shell: bash
 
             - name: upload artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: ${{ matrix.os }}-x64-${{ github.ref_name }}.zip
                   path: ./${{ matrix.os }}-x64-${{ github.ref_name }}.zip
@@ -42,9 +42,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: download artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   path: ./artifacts
+
+            - name: install gh cli
+              run: |
+                  sudo apt update
+                  sudo apt install -y gh
 
             - name: create release
               id: create_release
@@ -56,11 +61,6 @@ jobs:
                   release_name: Release ${{ github.ref_name }}
                   draft: false
                   prerelease: false
-
-            - name: install gh cli
-              run: |
-                  sudo apt update
-                  sudo apt install -y gh
 
             - name: upload release assets
               env:
