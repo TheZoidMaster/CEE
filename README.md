@@ -36,9 +36,9 @@ All credit for KEE and the KEE standard goes to [Jae](https://sharkb.yt)
 
 ## From the Releases
 
-1. Download the [latest releases](https://github.com/TheZoidMaster/CEE/releases/latest) of CEE for your operating system.
+1. Download the [latest release](https://github.com/TheZoidMaster/CEE/releases/) of CEE for your operating system.
 
-2. (Optional) Add the executable to PATH or environment variables so you can use it everywhere.
+2. (Optional) Rename the file to `CEE` (OSX & Linux) or `CEE.exe` (Windows)
 
 3. **Done!**
 
