@@ -15,6 +15,73 @@ class CEEDCompiler
         { "not", 0x06 }
     };
 
+    static readonly Random rnd = new Random();
+    static readonly Dictionary<string, Func<string?, byte>> specialTokens = new Dictionary<string, Func<string?, byte>>
+    {
+        ["RND"] = arg =>
+        {
+            if (arg == null)
+                return (byte)rnd.Next(0, 256);
+            if (byte.TryParse(arg, out var max))
+                return (byte)(rnd.Next(0, max + 1) % 256);
+            throw new Exception($"Invalid argument to RND: {arg}");
+        },
+        ["UTC"] = arg =>
+        {
+            return (byte)(DateTime.UtcNow.Hour % 256);
+        },
+        ["DEC"] = arg =>
+        {
+            if (arg == null)
+                throw new Exception("DEC requires an argument");
+            if (byte.TryParse(arg, out var val))
+                return val;
+            throw new Exception($"Invalid DEC argument: {arg}");
+        },
+        ["BIN"] = arg =>
+        {
+            if (arg == null)
+                throw new Exception("BIN requires an argument");
+            try
+            {
+                return Convert.ToByte(arg, 2);
+            }
+            catch
+            {
+                throw new Exception($"Invalid BIN argument: {arg}");
+            }
+        }
+    };
+
+    private static byte ParseOperand(string part)
+    {
+        var openParen = part.IndexOf('(');
+        if (openParen != -1 && part.EndsWith(")"))
+        {
+            var token = part.Substring(0, openParen);
+            var argStr = part.Substring(openParen + 1, part.Length - openParen - 2);
+            if (specialTokens.TryGetValue(token, out var func))
+            {
+                return func(argStr);
+            }
+        }
+        else
+        {
+            if (specialTokens.TryGetValue(part, out var func))
+            {
+                return func(null);
+            }
+        }
+
+        if (part.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            part = part.Substring(2);
+
+        if (byte.TryParse(part, System.Globalization.NumberStyles.HexNumber, null, out var val))
+            return val;
+
+        throw new Exception($"Invalid operand \"{part}\"");
+    }
+
     public static void Compile(string input, string? output)
     {
         var lines = File.ReadAllLines(input);
@@ -22,24 +89,26 @@ class CEEDCompiler
 
         foreach (var line in lines)
         {
-            if ((line == "") | (line.StartsWith("#")))
-            {
+            var codeLine = line.Split('#')[0].Trim();
+            if (string.IsNullOrEmpty(codeLine))
                 continue;
-            }
-            var parts = line.Split(' ');
-            if (Mappings.TryGetValue(parts[0], out var opcode))
+
+            var parts = codeLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) continue;
+
+            if (!Mappings.TryGetValue(parts[0], out var opcode))
             {
-                var operands = new List<byte>();
-                foreach (var part in parts.Skip(1))
-                {
-                    operands.Add(Convert.ToByte(part, 16));
-                }
-                instructions.Add(new InstructionToken(opcode, operands.ToArray()));
+                throw new Exception($"Unknown opcode \"{parts[0]}\" on line: {line}");
             }
-            else
+
+            var operands = new List<byte>();
+
+            foreach (var part in parts.Skip(1))
             {
-                throw new Exception($"Unknown opcode \"{parts[0]}\" on line {line}");
+                operands.Add(ParseOperand(part));
             }
+
+            instructions.Add(new InstructionToken(opcode, operands.ToArray()));
         }
 
         if (output == null)
