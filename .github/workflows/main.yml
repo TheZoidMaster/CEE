@@ -64,7 +64,7 @@ jobs:
                   shopt -s nullglob
                   for file in ./artifacts/**/*; do
                     if [[ -f "$file" ]]; then
-                      gh release upload ${{ github.ref_name }} "$file" --clobber
+                      gh release upload ${{ github.ref_name }} "$file" --clobber --repo $GITHUB_REPOSITORY
                     fi
                   done
                   shopt -u nullglob
