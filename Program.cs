@@ -17,6 +17,16 @@ class Program
         public string? Output { get; set; }
     }
 
+    [Verb("decompile", HelpText = "Decompile a CEE file into a CEED file")]
+    public class DecompileOptions
+    {
+        [Value(0, MetaName = "input", Required = true, HelpText = "Input file to decompile")]
+        public required string Input { get; set; }
+
+        [Value(1, MetaName = "output", HelpText = "Output file (will default to <input file name>.ceed)")]
+        public string? Output { get; set; }
+    }
+
     [Verb("file", HelpText = "Encrypt or decrypt a single file using a CEE file")]
     public class FileEncryptionOptions
     {
@@ -51,8 +61,9 @@ class Program
 
     static void Main(string[] args)
     {
-        Parser.Default.ParseArguments<CompileOptions, FileEncryptionOptions, FolderEncryptionOptions>(args)
+        Parser.Default.ParseArguments<CompileOptions, DecompileOptions, FileEncryptionOptions, FolderEncryptionOptions>(args)
             .WithParsed<CompileOptions>(Compile)
+            .WithParsed<DecompileOptions>(Decompile)
             .WithParsed<FileEncryptionOptions>(FileEncryption)
             .WithParsed<FolderEncryptionOptions>(FolderEncryption);
     }
@@ -60,6 +71,11 @@ class Program
     static void Compile(CompileOptions options)
     {
         CEEDCompiler.Compile(options.Input, options.Output);
+    }
+
+    static void Decompile(DecompileOptions options)
+    {
+        CEEDDecompiler.Decompile(options.Input, options.Output);
     }
 
     static void FileEncryption(FileEncryptionOptions options)
