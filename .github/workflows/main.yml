@@ -23,6 +23,7 @@ jobs:
                   dotnet-version: "9.0.x"
 
             - name: publish app
+              shell: bash
               run: |
                   RID=$([[ "${{ matrix.os }}" == "windows-latest" ]] && echo "win-x64" || ([[ "${{ matrix.os }}" == "ubuntu-latest" ]] && echo "linux-x64" || echo "osx-x64"))
                   dotnet publish ./CEE.csproj -c Release \
@@ -34,7 +35,9 @@ jobs:
                     -o ./publish/${{ matrix.os }}
 
             - name: zip published files
+              shell: bash
               run: |
+                  RID=$([[ "${{ matrix.os }}" == "windows-latest" ]] && echo "win-x64" || ([[ "${{ matrix.os }}" == "ubuntu-latest" ]] && echo "linux-x64" || echo "osx-x64"))
                   cd ./publish/${{ matrix.os }}
                   zip -r ../../cee-${RID}.zip .
 
