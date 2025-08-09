@@ -9,7 +9,7 @@ class CEEDCompiler
         { "add", 0x00 },
         { "sub", 0x01 },
         { "grd", 0x02 },
-        { "lgd", 0x03 },
+        { "lgr", 0x03 },
         { "lsh", 0x04 },
         { "rsh", 0x05 },
         { "not", 0x06 }

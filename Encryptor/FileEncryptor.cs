@@ -7,7 +7,9 @@ class FileEncryptor
 {
     static readonly Dictionary<byte, InstructionBase> Mappings = new Dictionary<byte, InstructionBase> {
         { 0x00, new Add() },
-        { 0x01, new Sub() }
+        { 0x01, new Sub() },
+        { 0x02, new Gradient() },
+        { 0x03, new LinearGradient() }
     };
 
     public static void EncryptFile(string inputPath, string outputPath, string keyPath, bool decrypt)
