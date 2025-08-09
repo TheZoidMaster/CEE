@@ -43,29 +43,12 @@ class Program
         public bool Decrypt { get; set; }
     }
 
-    [Verb("folder", HelpText = "Encrypt or decrypt a folder using a CEE file")]
-    public class FolderEncryptionOptions
-    {
-        [Value(0, MetaName = "input", Required = true, HelpText = "Input folder to encrypt or decrypt")]
-        public required string Input { get; set; }
-
-        [Value(1, MetaName = "key", Required = true, HelpText = "CEE file to encrypt or decrypt with")]
-        public required string Key { get; set; }
-
-        [Value(2, MetaName = "output", HelpText = "Output folder (if not specified, the input folder will be overwritten)")]
-        public string? Output { get; set; }
-
-        [Option('d', "decrypt", Default = false, HelpText = "Decrypt the input folder instead of encrypting it")]
-        public bool Decrypt { get; set; }
-    }
-
     static void Main(string[] args)
     {
-        Parser.Default.ParseArguments<CompileOptions, DecompileOptions, FileEncryptionOptions, FolderEncryptionOptions>(args)
+        Parser.Default.ParseArguments<CompileOptions, DecompileOptions, FileEncryptionOptions>(args)
             .WithParsed<CompileOptions>(Compile)
             .WithParsed<DecompileOptions>(Decompile)
-            .WithParsed<FileEncryptionOptions>(FileEncryption)
-            .WithParsed<FolderEncryptionOptions>(FolderEncryption);
+            .WithParsed<FileEncryptionOptions>(FileEncryption);
     }
 
     static void Compile(CompileOptions options)
@@ -81,12 +64,5 @@ class Program
     static void FileEncryption(FileEncryptionOptions options)
     {
         FileEncryptor.EncryptFile(options.Input, options.Output ?? options.Input, options.Key, options.Decrypt);
-    }
-
-    static void FolderEncryption(FolderEncryptionOptions options)
-    {
-        Console.WriteLine($"Input: {options.Input}");
-        Console.WriteLine($"Output: {options.Output ?? "<overwrite>"}");
-        Console.WriteLine($"Key: {options.Key}");
     }
 }
