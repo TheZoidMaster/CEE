@@ -33,7 +33,7 @@ jobs:
                     RID="osx-x64"
                   fi
                   echo "Publishing for RID=$RID"
-                  dotnet publish ./CEE.csproj -c Release /p:RuntimeIdentifier=$RID /p:SelfContained=true /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false -o ./publish/${{ matrix.os }}
+                  dotnet publish ./CEE.csproj -c Release -p:RuntimeIdentifier=$RID -p:SelfContained=true -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false -o ./publish/${{ matrix.os }}
 
             - name: zip published files
               shell: bash
