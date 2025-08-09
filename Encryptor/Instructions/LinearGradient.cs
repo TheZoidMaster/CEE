@@ -7,7 +7,6 @@ class LinearGradient : InstructionBase
     public override byte[] Encrypt(byte[] file, byte[] inputs)
     {
         byte[] output = new byte[file.Length];
-        Console.WriteLine($"lgr {inputs[0]}-{inputs[1]} with length {file.Length}");
         byte[] gradient = GenLinearGradient(inputs[0], inputs[1], true, file.Length);
         for (int i = 0; i < file.Length; i++)
         {
