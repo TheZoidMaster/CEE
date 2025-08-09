@@ -26,13 +26,7 @@ jobs:
               shell: bash
               run: |
                   RID=$([[ "${{ matrix.os }}" == "windows-latest" ]] && echo "win-x64" || ([[ "${{ matrix.os }}" == "ubuntu-latest" ]] && echo "linux-x64" || echo "osx-x64"))
-                  dotnet publish ./CEE.csproj -c Release \
-                    /p:RuntimeIdentifier=$RID \
-                    /p:SelfContained=true \
-                    /p:PublishSingleFile=true \
-                    /p:DebugType=None \
-                    /p:DebugSymbols=false \
-                    -o ./publish/${{ matrix.os }}
+                  dotnet publish ./CEE.csproj -c Release /p:RuntimeIdentifier=$RID /p:SelfContained=true /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false -o ./publish/${{ matrix.os }}
 
             - name: zip published files
               shell: bash
