@@ -60,8 +60,11 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               shell: bash
               run: |
+                  cd $GITHUB_WORKSPACE
                   shopt -s nullglob
                   for file in ./artifacts/**/*; do
-                    gh release upload ${{ github.ref_name }} "$file" --clobber
+                    if [[ -f "$file" ]]; then
+                      gh release upload ${{ github.ref_name }} "$file" --clobber
+                    fi
                   done
                   shopt -u nullglob
