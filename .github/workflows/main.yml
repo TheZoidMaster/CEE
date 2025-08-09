@@ -3,11 +3,11 @@ name: build and release
 on:
     push:
         tags:
-            - "*.*.*"
+            - "v*.*.*"
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 os: [ubuntu-latest, windows-latest, macos-latest]
@@ -23,19 +23,18 @@ jobs:
                   dotnet-version: "9.0.x"
 
             - name: publish app
-              run: dotnet publish -c Release -r ${{ matrix.os == 'windows-latest' && 'win-x64' || matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'macos-latest' && 'osx-x64' }} --self-contained true /p:PublishSingleFile=true /p:Version=${{ github.ref_name }} -o ./publish/${{ matrix.os }}
-
-            - name: zip publish folder
-              run: |
-                  cd publish
-                  zip -r ../${{ matrix.os }}-x64-${{ github.ref_name }}.zip ./${{ matrix.os }}
-              shell: bash
+              run: dotnet publish ./CEE.csproj -c Release \
+                  -r ${{ matrix.os == 'windows-latest' && 'win-x64' || matrix.os == 'ubuntu-latest' && 'linux-x64' || 'osx-x64' }} \
+                  --self-contained true \
+                  /p:PublishSingleFile=true \
+                  /p:DebugType=None /p:DebugSymbols=false \
+                  -o ./publish/${{ matrix.os }}
 
             - name: upload artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: ${{ matrix.os }}-x64-${{ github.ref_name }}.zip
-                  path: ./${{ matrix.os }}-x64-${{ github.ref_name }}.zip
+                  name: ${{ matrix.os }}-x64
+                  path: ./publish/${{ matrix.os }}/*
 
     release:
         needs: build
@@ -52,7 +51,6 @@ jobs:
                   sudo apt install -y gh
 
             - name: create release
-              id: create_release
               uses: actions/create-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -66,6 +64,6 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  for file in ./artifacts/*.zip; do
+                  for file in ./artifacts/**/*; do
                     gh release upload ${{ github.ref_name }} "$file"
                   done
