@@ -11,8 +11,7 @@ class FileEncryptor
         { 0x02, new Gradient() },
         { 0x03, new LinearGradient() },
         { 0x04, new Leftshift() },
-        { 0x05, new Rightshift() },
-        { 0x06, new Not() }
+        { 0x05, new Rightshift() }
     };
 
     public static void EncryptFile(string inputPath, string outputPath, string keyPath, bool decrypt)

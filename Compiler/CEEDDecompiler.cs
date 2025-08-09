@@ -11,8 +11,7 @@ class CEEDDecompiler
         { 0x02, "GRD" },
         { 0x03, "LGD" },
         { 0x04, "LSH" },
-        { 0x05, "RSH" },
-        { 0x06, "NOT" }
+        { 0x05, "RSH" }
     };
 
     public static void Decompile(string input, string? output)

@@ -12,8 +12,7 @@ class CEEDCompiler
         { "GRD", 0x02 },
         { "LGD", 0x03 },
         { "LSH", 0x04 },
-        { "RSH", 0x05 },
-        { "NOT", 0x06 }
+        { "RSH", 0x05 }
     };
 
     static readonly Random rnd = new Random();
