@@ -9,10 +9,11 @@ class CEEDCompiler
         { "add", 0x00 },
         { "sub", 0x01 },
         { "grd", 0x02 },
-        { "lgr", 0x03 },
+        { "lgd", 0x03 },
         { "lsh", 0x04 },
         { "rsh", 0x05 },
-        { "not", 0x06 }
+        { "not", 0x06 },
+        { "gsh", 0x07 }
     };
 
     public static void Compile(string input, string? output)
