@@ -25,13 +25,26 @@ jobs:
             - name: publish app
               shell: bash
               run: |
-                  RID=$([[ "${{ matrix.os }}" == "windows-latest" ]] && echo "win-x64" || ([[ "${{ matrix.os }}" == "ubuntu-latest" ]] && echo "linux-x64" || echo "osx-x64"))
+                  if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+                    RID="win-x64"
+                  elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+                    RID="linux-x64"
+                  else
+                    RID="osx-x64"
+                  fi
+                  echo "Publishing for RID=$RID"
                   dotnet publish ./CEE.csproj -c Release /p:RuntimeIdentifier=$RID /p:SelfContained=true /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false -o ./publish/${{ matrix.os }}
 
             - name: zip published files
               shell: bash
               run: |
-                  RID=$([[ "${{ matrix.os }}" == "windows-latest" ]] && echo "win-x64" || ([[ "${{ matrix.os }}" == "ubuntu-latest" ]] && echo "linux-x64" || echo "osx-x64"))
+                  if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+                    RID="win-x64"
+                  elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+                    RID="linux-x64"
+                  else
+                    RID="osx-x64"
+                  fi
                   cd ./publish/${{ matrix.os }}
                   zip -r ../../cee-${RID}.zip .
 
@@ -55,20 +68,10 @@ jobs:
                   sudo apt update
                   sudo apt install -y gh
 
-            - name: create release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag_name: ${{ github.ref_name }}
-                  release_name: Release ${{ github.ref_name }}
-                  draft: false
-                  prerelease: false
-
             - name: upload release assets
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   for file in ./artifacts/*.zip; do
-                    gh release upload ${{ github.ref_name }} "$file"
+                    gh release upload ${{ github.ref_name }} "$file" --clobber
                   done
