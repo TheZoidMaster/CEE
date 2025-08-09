@@ -35,28 +35,11 @@ jobs:
                   echo "Publishing for RID=$RID"
                   dotnet publish ./CEE.csproj -c Release -p:RuntimeIdentifier=$RID -p:SelfContained=true -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false -o ./publish/${{ matrix.os }}
 
-            - name: zip published files (windows)
-              if: matrix.os == 'windows-latest'
-              shell: powershell
-              run: Compress-Archive -Path ./publish/windows-latest/* -DestinationPath ./cee-win-x64.zip -Force
-
-            - name: zip published files (linux & macos)
-              if: matrix.os != 'windows-latest'
-              shell: bash
-              run: |
-                  if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-                    RID="linux-x64"
-                  else
-                    RID="osx-x64"
-                  fi
-                  cd ./publish/${{ matrix.os }}
-                  zip -r ../../cee-${RID}.zip .
-
             - name: upload artifact
               uses: actions/upload-artifact@v4
               with:
                   name: cee-${{ matrix.os == 'windows-latest' && 'win-x64' || matrix.os == 'ubuntu-latest' && 'linux-x64' || 'osx-x64' }}
-                  path: ./cee-*.zip
+                  path: ./publish/${{ matrix.os }}/
 
     release:
         needs: build
@@ -75,7 +58,10 @@ jobs:
             - name: upload release assets
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              shell: bash
               run: |
-                  for file in ./artifacts/*.zip; do
+                  shopt -s nullglob
+                  for file in ./artifacts/**/*; do
                     gh release upload ${{ github.ref_name }} "$file" --clobber
                   done
+                  shopt -u nullglob
