@@ -5,18 +5,19 @@ using System.Reflection;
 
 class CEEDCompiler
 {
-    static readonly Dictionary<string, byte> Mappings = new Dictionary<string, byte> {
-        { "add", 0x00 },
-        { "sub", 0x01 },
-        { "grd", 0x02 },
-        { "lgd", 0x03 },
-        { "lsh", 0x04 },
-        { "rsh", 0x05 },
-        { "not", 0x06 }
+    static readonly Dictionary<string, byte> Mappings = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "ADD", 0x00 },
+        { "SUB", 0x01 },
+        { "GRD", 0x02 },
+        { "LGD", 0x03 },
+        { "LSH", 0x04 },
+        { "RSH", 0x05 },
+        { "NOT", 0x06 }
     };
 
     static readonly Random rnd = new Random();
-    static readonly Dictionary<string, Func<string?, byte>> specialTokens = new Dictionary<string, Func<string?, byte>>
+    static readonly Dictionary<string, Func<string?, byte>> specialTokens = new Dictionary<string, Func<string?, byte>>(StringComparer.OrdinalIgnoreCase)
     {
         ["RND"] = arg =>
         {
