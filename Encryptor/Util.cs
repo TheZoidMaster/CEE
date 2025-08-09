@@ -20,7 +20,7 @@ class Util
         for (int i = 0; i < length; i++)
         {
             float value = start + (step * i);
-            result[i] = (byte)MathF.Round(value);
+            result[i] = (byte)MathF.Round(value, MidpointRounding.AwayFromZero);
         }
 
         return result;
@@ -67,5 +67,17 @@ class Util
         }
 
         return result;
+    }
+
+    public static byte RotateLeft(byte value, byte amount)
+    {
+        amount %= 8;
+        return (byte)(((value << amount) | (value >> (8 - amount))) & 0xFF);
+    }
+
+    public static byte RotateRight(byte value, byte amount)
+    {
+        amount %= 8;
+        return (byte)(((value >> amount) | (value << (8 - amount))) & 0xFF);
     }
 }

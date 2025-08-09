@@ -12,8 +12,7 @@ class CEEDCompiler
         { "lgd", 0x03 },
         { "lsh", 0x04 },
         { "rsh", 0x05 },
-        { "not", 0x06 },
-        { "gsh", 0x07 }
+        { "not", 0x06 }
     };
 
     public static void Compile(string input, string? output)
