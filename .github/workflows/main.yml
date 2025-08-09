@@ -35,12 +35,16 @@ jobs:
                   echo "Publishing for RID=$RID"
                   dotnet publish ./CEE.csproj -c Release -p:RuntimeIdentifier=$RID -p:SelfContained=true -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false -o ./publish/${{ matrix.os }}
 
-            - name: zip published files
+            - name: zip published files (windows)
+              if: matrix.os == 'windows-latest'
+              shell: powershell
+              run: Compress-Archive -Path ./publish/windows-latest/* -DestinationPath ./cee-win-x64.zip -Force
+
+            - name: zip published files (linux & macos)
+              if: matrix.os != 'windows-latest'
               shell: bash
               run: |
-                  if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-                    RID="win-x64"
-                  elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+                  if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
                     RID="linux-x64"
                   else
                     RID="osx-x64"
