@@ -2,6 +2,8 @@
 
 <p align="center"><strong>This readme is modified from KEE and is temporary.</strong></p>
 
+<p align="center"><strong>Future instructions will likely be in <a href="https://kee.sharkb.yt/#/wiki/Implementations/CEE_(C_)">the CEE section of the KEE wiki.</a></strong></p>
+
 # Topics
 
 1. [About](#about)
