@@ -1,6 +1,5 @@
 ﻿namespace CEE;
 
-using System;
 using CEE.Compiler;
 using CEE.Encryptor;
 using CommandLine;
