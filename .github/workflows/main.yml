@@ -32,14 +32,21 @@ jobs:
                   else
                     RID="osx-x64"
                   fi
+
                   echo "Publishing for RID=$RID"
                   dotnet publish ./CEE.csproj -c Release -p:RuntimeIdentifier=$RID -p:SelfContained=true -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false -o ./publish/${{ matrix.os }}
+
+                  if [[ "$RID" == "win-x64" ]]; then
+                    mv ./publish/${{ matrix.os }}/CEE.exe ./publish/${{ matrix.os }}/CEE-win-x64.exe
+                  else
+                    mv ./publish/${{ matrix.os }}/CEE ./publish/${{ matrix.os }}/CEE-$RID
+                  fi
 
             - name: upload artifact
               uses: actions/upload-artifact@v4
               with:
                   name: cee-${{ matrix.os == 'windows-latest' && 'win-x64' || matrix.os == 'ubuntu-latest' && 'linux-x64' || 'osx-x64' }}
-                  path: ./publish/${{ matrix.os }}/
+                  path: ./publish/${{ matrix.os }}/CEE*
 
     release:
         needs: build
@@ -64,6 +71,7 @@ jobs:
                   shopt -s nullglob
                   for file in ./artifacts/**/*; do
                     if [[ -f "$file" ]]; then
+                      echo "Uploading $file"
                       gh release upload ${{ github.ref_name }} "$file" --clobber --repo $GITHUB_REPOSITORY
                     fi
                   done
